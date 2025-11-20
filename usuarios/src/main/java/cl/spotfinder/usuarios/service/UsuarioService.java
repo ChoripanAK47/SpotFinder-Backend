@@ -15,14 +15,27 @@ public class UsuarioService {
     private UsuarioRepository repository;
 
     public List<Usuario> getAllUsuarios() {
-        List<Usuario> usuarios = repository.findAll();
-        return usuarios != null ? usuarios : List.of();
+        return repository.findAll();
     }
 
     public Usuario saveUsuario(Usuario usuario) {
-        if (usuario == null || usuario.getNombre() == null || usuario.getEmail() == null) {
-            throw new IllegalArgumentException("Usuario o campos requeridos no pueden ser nulos");
-        }
         return repository.save(usuario);
+    }
+    
+    public Usuario findById(int id) {
+        return repository.findById(id).orElse(null);
+    }   
+
+    public Usuario updateUsuario(Usuario usuario) {
+        Usuario existingUsuario = repository.findById(usuario.getId()).orElse(null);
+        existingUsuario.setNombre(usuario.getNombre());
+        existingUsuario.setApellido(usuario.getApellido());
+        existingUsuario.setEmail(usuario.getEmail());
+        existingUsuario.setContrasena(usuario.getContrasena());
+        return repository.save(existingUsuario);
+    }
+
+    public void deleteUsuario(int id) {
+        repository.deleteById(id);
     }
 }
