@@ -1,12 +1,12 @@
 package cl.spotfinder.usuarios.service;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import cl.spotfinder.usuarios.dto.Usuario;
 import cl.spotfinder.usuarios.repository.UsuarioRepository;
+import cl.spotfinder.usuarios.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 public class UsuarioService {
@@ -14,12 +14,34 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository repository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder; // Inyectamos el encriptador
+    
+    @Autowired
+    private JwtUtil jwtUtil; // Inyectamos la utilidad de tokens
+
     public List<Usuario> getAllUsuarios() {
         return repository.findAll();
     }
 
     public Usuario saveUsuario(Usuario usuario) {
+        // ENCRIPTAR la contraseña antes de guardar
+        usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
         return repository.save(usuario);
+    }
+
+    // Método de LOGIN modificado para devolver Token
+    public String login(String email, String passwordRaw) {
+        Usuario usuario = repository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Verificar si la contraseña coincide con la encriptada
+        if (passwordEncoder.matches(passwordRaw, usuario.getContrasena())) {
+            // Generar y retornar Token
+            return jwtUtil.generateToken(usuario.getEmail(), usuario.getRol());
+        } else {
+            throw new RuntimeException("Contraseña incorrecta");
+        }
     }
     
     public Usuario findById(int id) {
