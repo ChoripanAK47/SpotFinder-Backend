@@ -15,10 +15,10 @@ public class UsuarioService {
     private UsuarioRepository repository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder; // Inyectamos el encriptador
+    private PasswordEncoder passwordEncoder;
     
     @Autowired
-    private JwtUtil jwtUtil; // Inyectamos la utilidad de tokens
+    private JwtUtil jwtUtil;
 
     public List<Usuario> getAllUsuarios() {
         return repository.findAll();
@@ -30,11 +30,9 @@ public class UsuarioService {
         return repository.save(usuario);
     }
 
-    // Método de LOGIN modificado para devolver Token
     public String login(String email, String passwordRaw) {
         Usuario usuario = repository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
         // Verificar si la contraseña coincide con la encriptada
         if (passwordEncoder.matches(passwordRaw, usuario.getContrasena())) {
             // Generar y retornar Token
@@ -47,6 +45,10 @@ public class UsuarioService {
     public Usuario findById(int id) {
         return repository.findById(id).orElse(null);
     }   
+    
+    public Usuario findByEmail(String email) {
+        return repository.findByEmail(email).orElse(null);
+    }
 
     public Usuario updateUsuario(Usuario usuario) {
         Usuario existingUsuario = repository.findById(usuario.getId()).orElse(null);

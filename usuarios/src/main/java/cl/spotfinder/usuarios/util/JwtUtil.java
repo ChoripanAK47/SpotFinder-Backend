@@ -6,7 +6,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
@@ -29,7 +28,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    // Nuevo método para validar el token y obtener la autenticación
     public UsernamePasswordAuthenticationToken getAuthentication(String token) {
         try {
             DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(SECRET_KEY.getEncoded()))
@@ -37,9 +35,6 @@ public class JwtUtil {
                     .verify(token);
 
             String email = decodedJWT.getSubject();
-            // Aquí podrías extraer roles si los necesitas para autorización más granular
-            // String rol = decodedJWT.getClaim("rol").asString();
-
             return new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
         } catch (Exception e) {
             return null; // El token no es válido

@@ -34,5 +34,7 @@ public class Usuario {
 
     @Column(nullable = false)
     private String rol = "USER";
-    
+
+    @Column(nullable = false)
+    private String genero; // Valores permitidos: Hombre, Mujer, Otro
 }

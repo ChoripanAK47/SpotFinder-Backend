@@ -2,6 +2,7 @@ package cl.spotfinder.usuarios.controller;
 
 import cl.spotfinder.usuarios.dto.Usuario;
 import cl.spotfinder.usuarios.service.UsuarioService;
+import cl.spotfinder.usuarios.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -13,11 +14,14 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/usuarios")
-@CrossOrigin(origins = "*") // Permitir conexiones desde cualquier lado (ajustar en prod)
+@CrossOrigin(origins = "*") // Configurar para producción luego
 public class UsuarioController {
 
     @Autowired
     private UsuarioService servicio;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @GetMapping
     public ResponseEntity<?> getAllUsuarios() {
@@ -49,7 +53,7 @@ public class UsuarioController {
         }
     }
 
-    @PostMapping("/login") // Nuevo endpoint de Login
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> credenciales) {
         try {
             String token = servicio.login(credenciales.get("email"), credenciales.get("password"));
