@@ -30,7 +30,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable()) // Deshabilitar CSRF para APIs REST
-            .cors().and() // Habilitar soporte CORS y usar el CorsConfigurationSource bean
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Habilitar soporte CORS y usar el CorsConfigurationSource bean
             // Añadir nuestro filtro de JWT antes del filtro de autenticación estándar
             .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
@@ -47,11 +47,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // En desarrollo permitimos localhost:3306 y 127.0.0.1:3306. Cambiar cuando se despliegue.
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:3306", "http://127.0.0.1:3306"));
+        // CORRECCIÓN: Permitir localhost:5173 (Frontend React/Vite) en lugar del puerto de MySQL (3306)
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:5173", "http://127.0.0.1:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedHeaders(List.of("*")); // Permitir todas las cabeceras (incluyendo Authorization)
         configuration.setAllowCredentials(true);
+        
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
