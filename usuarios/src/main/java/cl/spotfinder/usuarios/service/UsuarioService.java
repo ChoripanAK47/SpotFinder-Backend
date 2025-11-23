@@ -50,6 +50,14 @@ public class UsuarioService {
         return repository.findByEmail(email).orElse(null);
     }
 
+    public Usuario findByNombre(String nombre) {
+        return repository.findByNombre(nombre).orElse(null);
+    }
+
+    public Usuario findByGenero (String genero) {
+        return repository.findByGenero(genero).orElse(null);
+    }
+
     public Usuario updateUsuario(Usuario usuario) {
         Usuario existingUsuario = repository.findById(usuario.getId()).orElse(null);
         existingUsuario.setNombre(usuario.getNombre());

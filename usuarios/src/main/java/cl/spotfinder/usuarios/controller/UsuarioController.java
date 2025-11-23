@@ -2,7 +2,8 @@ package cl.spotfinder.usuarios.controller;
 
 import cl.spotfinder.usuarios.dto.Usuario;
 import cl.spotfinder.usuarios.service.UsuarioService;
-import cl.spotfinder.usuarios.repository.UsuarioRepository;
+import cl.spotfinder.usuarios.dto.UsuarioProfile;
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -14,14 +15,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/usuarios")
-@CrossOrigin(origins = "*") // Configurar para producción luego
 public class UsuarioController {
 
     @Autowired
     private UsuarioService servicio;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    // usuarioRepository no se usa directamente aquí; usamos UsuarioService
 
     @GetMapping
     public ResponseEntity<?> getAllUsuarios() {
@@ -39,6 +38,28 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
         }
         return ResponseEntity.ok(usuario);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+        if (authentication == null || authentication.getPrincipal() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+        }
+        String email = authentication.getPrincipal().toString();
+        Usuario usuario = servicio.findByEmail(email);
+        if (usuario == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+        }
+        // Construir DTO de perfil sin la contraseña
+        UsuarioProfile profile = new UsuarioProfile(
+                usuario.getId(),
+                usuario.getNombre(),
+                usuario.getApellido(),
+                usuario.getEmail(),
+                usuario.getRol(),
+                usuario.getGenero()
+        );
+        return ResponseEntity.ok(profile);
     }
 
     @PostMapping("/add") // Registro
