@@ -48,7 +48,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // CORRECCIÓN: Permitir localhost:5173 (Frontend React/Vite) en lugar del puerto de MySQL (3306)
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:5173", "http://127.0.0.1:5173"));
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:5173", "http://127.0.0.1:5173",
+            "http://s3-tov-ikk-app-react.s3-website-us-east-1.amazonaws.com/"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*")); // Permitir todas las cabeceras (incluyendo Authorization)
         configuration.setAllowCredentials(true);
