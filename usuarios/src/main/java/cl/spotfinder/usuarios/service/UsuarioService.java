@@ -73,6 +73,8 @@ public class UsuarioService {
             existingUsuario.setApellido(usuario.getApellido());
             existingUsuario.setEmail(usuario.getEmail());
             
+            existingUsuario.setRol(usuario.getRol()); 
+            existingUsuario.setGenero(usuario.getGenero());
             // --- ESTO ES LO QUE TE FALTA ---
             // Si la contraseña no viene vacía, la encriptamos antes de guardar
             if (usuario.getContrasena() != null && !usuario.getContrasena().isEmpty()) {

@@ -66,9 +66,18 @@ public class UsuarioController {
     public ResponseEntity<?> saveUsuario(@RequestBody Usuario usuario) {
         try {
             Usuario nuevoUsuario = servicio.saveUsuario(usuario);
-            // No devolver la contraseña en la respuesta
-            nuevoUsuario.setContrasena(null); 
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoUsuario);
+            
+            // CORRECCIÓN: Usar el DTO UsuarioProfile para responder en vez de modificar la entidad
+            UsuarioProfile response = new UsuarioProfile(
+                nuevoUsuario.getId(),
+                nuevoUsuario.getNombre(),
+                nuevoUsuario.getApellido(),
+                nuevoUsuario.getEmail(),
+                nuevoUsuario.getRol(),
+                nuevoUsuario.getGenero()
+            );
+            
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
         }
